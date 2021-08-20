@@ -1,0 +1,59 @@
+{% from "macros.j2" import render_subject_content %}
+{% from "ginza/_macros.j2" import render_podcast_info, render_site_info with context %}
+
+{% block style %}
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ config.cdn }}ginza.css">
+{% endblock %}
+
+{% block body %}
+  <div {% if site.cover -%}
+    class="head-cover js-cover" data-src="{{ site.cover.src|thumbnail }}"
+  {%- else -%}
+    class="head-cover"
+  {%- endif %}>
+    <div class="info">
+      <div class="inner">
+        {% if page.type == 'audio' %}
+          {{ render_podcast_info(site) }}
+        {% else %}
+          {{ render_site_info(site) }}
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="main">
+    <div class="inner">
+      <article role="main" class="h-entry" itemscope itemtype="http://schema.org/Article">
+        <div class="entry-meta">
+          {% if page.type == 'audio' %}
+            {% if page.season and page.episode %}
+              <span class="item-label">S{{ page.season }}E{{ page.episode }}</span>
+            {% endif %}
+            <span class="item-label">{{ page.duration }}</span>
+          {% endif %}
+          {% if page.published_at %}
+            <time class="dt-published" datetime="{{ page.published_at|xmldatetime }}"
+                  itemprop="datePublished">{{ page.published_at.strftime('%b %d, %Y') }}</time>
+          {% endif %}
+        </div>
+        <h1 class="p-name" itemprop="headline">{{ page.title }}</h1>
+        {% if page.subtitle %}
+          <h2 class="p-summary">{{ page.subtitle }}</h2>
+        {% endif %}
+        <div class="e-content js-content yue" itemprop="articleBody">
+          {{ render_subject_content(site, page) }}
+          {% if page.type == 'page' %}
+            {% include "_snippets/page_qr.j2" %}
+          {% endif %}
+        </div>
+      </article>
+      <div class="entry-block">
+        {% include "_snippets/subject_share.j2" %}
+      </div>
+    </div>
+    {% include "_snippets/subject_foot.j2" %}
+  </div>
+  {% include "_snippets/site_foot.j2" %}
+  {% include "_snippets/brand_foot.j2" %}
+{% endblock %}

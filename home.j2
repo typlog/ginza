@@ -1,0 +1,56 @@
+{% block style %}
+  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ config.cdn }}ginza.css">
+{% endblock %}
+
+
+{%- macro render_item(subject) -%}
+  <div id="item-{{ subject.id }}" class="item {{ subject.type|title }}">
+    {% if subject.cover and subject.cover.src %}
+      <a class="item-image js-cover" data-src="{{ subject.cover.src|thumbnail('m') }}" href="{{ linkify(subject.url) }}"></a>
+    {% elif subject.image %}
+      <a class="item-image js-cover" data-src="{{ subject.image|thumbnail('m') }}" href="{{ linkify(subject.url) }}"></a>
+    {% else %}
+      <a class="item-image" href="{{ linkify(subject.url) }}"></a>
+    {% endif %}
+    <a class="item-main" href="{{ linkify(subject.url) }}">
+      <div class="item-meta">
+        {% if subject.duration %}
+          <span class="item-label">{{ subject.duration }}</span>
+        {% endif %}
+        <time datetime="{{ subject.published_at|xmldatetime }}">{{ subject.published_at.strftime('%b %d, %Y') }}</time>
+      </div>
+      <h3>{{ subject.title }}</h3>
+      {%- if subject.subtitle %}
+        <div class="item-subtitle">{{ subject.subtitle }}</div>
+      {%- endif -%}
+    </a>
+  </div>
+{%- endmacro -%}
+
+
+{% block body %}
+  <div {% if site.cover -%}
+    class="head-cover js-cover" data-src="{{ site.cover.src|thumbnail }}"
+  {%- else -%}
+    class="head-cover"
+  {%- endif %}>
+    {% if features.post %}
+      {% include "gh:typlog/ginza/_site_info.j2" %}
+    {% else %}
+      {% include "gh:typlog/ginza/_podcast_info.j2" %}
+    {% endif %}
+  </div>
+  <div class="main">
+    <div class="inner">
+      <div class="items">
+        {% for subject in query.latest_subjects() %}
+          {{ render_item(subject) }}
+        {% endfor %}
+      </div>
+      <div class="navigation">
+        <a href="{{ linkify('/archive/') }}">More</a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

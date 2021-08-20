@@ -2,7 +2,7 @@
 
 {% block style %}
   <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ config.cdn }}ginza.css">
+  <link rel="stylesheet" href="{{ static_url }}ginza.css">
 {% endblock %}
 
 {%- macro render_item(subject) -%}
@@ -29,6 +29,97 @@
   </div>
 {%- endmacro -%}
 
+{% macro render_head(site) %}
+<div class="head">
+  <div class="inner">
+    <div class="head_logo">
+      <a href="{{ linkify('/') }}">
+        {% if site.logo %}
+          <img src="{{ site.logo.src|thumbnail('ss') }}" alt="{{ site.name }}"/>
+        {% endif %}
+        <span>{{ site.name }}</span>
+      </a>
+    </div>
+    <div class="head_subscribe">
+      {% if features.algolia %}
+        <a href="#" class="js-search" data-id="{{ site.algolia_id }}" data-key="{{ site.algolia_key }}">
+          <i class="icon icon-search" aria-label="Search"></i>
+        </a>
+      {% endif %}
+      {% if features.post %}
+        <button class="js-subscribe" data-feed="{{ linkify('/feed.xml') }}">Subscribe</button>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro render_site_info(site) %}
+  <div class="info_main">
+    <h1 class="info_title"><a class="h-card" rel="me" href="{{ linkify('/') }}">{{ site.name }}</a></h1>
+    {% if site.summary %}
+      <h2 class="info_subtitle">{{ site.summary }}</h2>
+    {% endif %}
+    <nav class="info_nav">
+      {% for nav in site.nav_links -%}
+        <a href="{{ nav.url }}"{% if nav.blank %} target="_blank"{% endif %}>{{ nav.title }}</a>
+      {% endfor %}
+    </nav>
+  </div>
+{% endmacro %}
+
+{% macro render_podcast_info(site) %}
+  {% set podcast = site.podcast %}
+  {% if podcast.image %}
+    <a class="info_logo" href="{{ linkify('/') }}">
+      <img src="{{ podcast.image|thumbnail('ss') }}" alt="{{ podcast.title }}">
+    </a>
+  {% endif %}
+  <div class="info_main">
+    <h1 class="info_title"><a class="h-card" rel="me" href="{{ linkify('/') }}">{{ podcast.title }}</a></h1>
+    {% if podcast.subtitle %}
+      <h2 class="info_subtitle">{{ podcast.subtitle }}</h2>
+    {% endif %}
+    <nav class="info_nav">
+      <a href="/episodes/feed.xml">RSS</a>
+      {% for nav in podcast.links %}
+        <a href="{{ nav.url }}"{% if nav.blank %} target="_blank"{% endif %}>{{ nav.title }}</a>
+      {% endfor %}
+    </nav>
+  </div>
+{% endmacro %}
+
+{% macro render_tag_info(tag) %}
+<div class="info_main">
+  <h1 class="info_title"><a class="h-card" rel="me" href="{{ linkify(tag.url) }}">{{ tag.name }}</a></h1>
+  {% if tag.summary %}
+    <h2 class="info_subtitle">{{ tag.summary }}</h2>
+  {% endif %}
+  <nav class="info_nav">
+    {% for nav in site.nav_links -%}
+      <a href="{{ nav.url }}"{% if nav.blank %} target="_blank"{% endif %}>{{ nav.title }}</a>
+    {% endfor %}
+  </nav>
+</div>
+{% endmacro %}
+
+
+{% macro render_author_info(author) %}
+{% if author.avatar %}
+  <a class="info_logo" href="{{ linkify('/') }}">
+    <img class="avatar" src="{{ author.avatar|thumbnail('ss') }}" alt="{{ author.name }}">
+  </a>
+{% endif %}
+<div class="info_main">
+  <h1 class="info_title"><a class="h-card" rel="me" href="{{ linkify(author.url) }}">{{ author.name }}</a></h1>
+  <nav class="info_nav">
+    {% for nav in site.nav_links -%}
+      <a href="{{ nav.url }}"{% if nav.blank %} target="_blank"{% endif %}>{{ nav.title }}</a>
+    {% endfor %}
+  </nav>
+</div>
+{% endmacro %}
+
 
 {% block body %}
   {% set cover = site.cover %}
@@ -43,39 +134,15 @@
   {%- else -%}
     class="head-cover"
   {%- endif %}>
-    {% include "ginza/_head.j2" %}
+    {{ render_head(site) }}
     <div class="info _{{ page.type }}">
       <div class="inner">
         {% if page.type == 'episodes' %}
           {{ render_podcast_info(site) }}
         {% elif page.type == 'tag' %}
-          {% set tag = page.topic %}
-          <div class="info_main">
-            <h1 class="info_title"><a class="h-card" rel="me" href="{{ linkify(tag.url) }}">{{ tag.name }}</a></h1>
-            {% if tag.summary %}
-              <h2 class="info_subtitle">{{ tag.summary }}</h2>
-            {% endif %}
-            <nav class="info_nav">
-              {% for nav in site.nav_links -%}
-                <a href="{{ nav.url }}"{% if nav.blank %} target="_blank"{% endif %}>{{ nav.title }}</a>
-              {% endfor %}
-            </nav>
-          </div>
+          {{ render_tag_info(page.topic) }}
         {% elif page.type == 'author' %}
-          {% set author = page.topic %}
-          {% if author.avatar %}
-            <a class="info_logo" href="{{ linkify('/') }}">
-              <img class="avatar" src="{{ author.avatar|thumbnail('ss') }}" alt="{{ author.name }}">
-            </a>
-          {% endif %}
-          <div class="info_main">
-            <h1 class="info_title"><a class="h-card" rel="me" href="{{ linkify(author.url) }}">{{ author.name }}</a></h1>
-            <nav class="info_nav">
-              {% for nav in site.nav_links -%}
-                <a href="{{ nav.url }}"{% if nav.blank %} target="_blank"{% endif %}>{{ nav.title }}</a>
-              {% endfor %}
-            </nav>
-          </div>
+          {{ render_author_info(page.topic) }}
         {% elif page.type == 'language' %}
           {% set info = page.topic %}
           <div class="info_main">
@@ -102,4 +169,6 @@
       {{ render_navigation(page) }}
     </div>
   </div>
+  {% include "_snippets/site_foot.j2" %}
+  {% include "_snippets/brand_foot.j2" %}
 {% endblock %}

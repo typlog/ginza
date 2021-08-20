@@ -1,6 +1,6 @@
 {% block style %}
   <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ config.cdn }}ginza.css">
+  <link rel="stylesheet" href="{{ static_url }}ginza.css">
 {% endblock %}
 
 
@@ -28,6 +28,66 @@
   </div>
 {%- endmacro -%}
 
+{% macro render_head(site) %}
+<div class="head">
+  <div class="inner">
+    <div class="head_logo">
+      <a href="{{ linkify('/') }}">
+        {% if site.logo %}
+          <img src="{{ site.logo.src|thumbnail('ss') }}" alt="{{ site.name }}"/>
+        {% endif %}
+        <span>{{ site.name }}</span>
+      </a>
+    </div>
+    <div class="head_subscribe">
+      {% if features.algolia %}
+        <a href="#" class="js-search" data-id="{{ site.algolia_id }}" data-key="{{ site.algolia_key }}">
+          <i class="icon icon-search" aria-label="Search"></i>
+        </a>
+      {% endif %}
+      {% if features.post %}
+        <button class="js-subscribe" data-feed="{{ linkify('/feed.xml') }}">Subscribe</button>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endmacro %}
+
+{% macro render_site_info(site) %}
+  <div class="info_main">
+    <h1 class="info_title"><a class="h-card" rel="me" href="{{ linkify('/') }}">{{ site.name }}</a></h1>
+    {% if site.summary %}
+      <h2 class="info_subtitle">{{ site.summary }}</h2>
+    {% endif %}
+    <nav class="info_nav">
+      {% for nav in site.nav_links -%}
+        <a href="{{ nav.url }}"{% if nav.blank %} target="_blank"{% endif %}>{{ nav.title }}</a>
+      {% endfor %}
+    </nav>
+  </div>
+{% endmacro %}
+
+{% macro render_podcast_info(site) %}
+  {% set podcast = site.podcast %}
+  {% if podcast.image %}
+    <a class="info_logo" href="{{ linkify('/') }}">
+      <img src="{{ podcast.image|thumbnail('ss') }}" alt="{{ podcast.title }}">
+    </a>
+  {% endif %}
+  <div class="info_main">
+    <h1 class="info_title"><a class="h-card" rel="me" href="{{ linkify('/') }}">{{ podcast.title }}</a></h1>
+    {% if podcast.subtitle %}
+      <h2 class="info_subtitle">{{ podcast.subtitle }}</h2>
+    {% endif %}
+    <nav class="info_nav">
+      <a href="/episodes/feed.xml">RSS</a>
+      {% for nav in podcast.links %}
+        <a href="{{ nav.url }}"{% if nav.blank %} target="_blank"{% endif %}>{{ nav.title }}</a>
+      {% endfor %}
+    </nav>
+  </div>
+{% endmacro %}
+
 
 {% block body %}
   <div {% if site.cover -%}
@@ -35,16 +95,21 @@
   {%- else -%}
     class="head-cover"
   {%- endif %}>
-    {% if features.post %}
-      {% include "gh:typlog/ginza/_site_info.j2" %}
-    {% else %}
-      {% include "gh:typlog/ginza/_podcast_info.j2" %}
-    {% endif %}
+    {{ render_head(site) }}
+    <div class="info">
+      <div class="inner">
+        {% if features.post %}
+          {{ render_site_info(site) }}
+        {% else %}
+          {{ render_podcast_info(site) }}
+        {% endif %}
+      </div>
+    </div>
   </div>
   <div class="main">
     <div class="inner">
       <div class="items">
-        {% for subject in query.latest_subjects() %}
+        {% for subject in query.latest_subjects(count=12) %}
           {{ render_item(subject) }}
         {% endfor %}
       </div>
@@ -53,4 +118,6 @@
       </div>
     </div>
   </div>
+  {% include "_snippets/site_foot.j2" %}
+  {% include "_snippets/brand_foot.j2" %}
 {% endblock %}

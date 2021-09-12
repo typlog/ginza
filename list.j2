@@ -1,4 +1,4 @@
-{% from "macros.j2" import render_navigation with context %}
+{% from "macros.j2" import render_navigation %}
 
 {% block style %}
   <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
@@ -166,7 +166,7 @@
           {{ render_item(subject) }}
         {% endfor %}
       </div>
-      {{ render_navigation(page) }}
+      {{ render_navigation(site, page) }}
     </div>
   </div>
   {% include "_snippets/site_foot.j2" %}

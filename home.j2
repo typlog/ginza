@@ -40,11 +40,10 @@
       </a>
     </div>
     <div class="head_subscribe">
-      {% if features.algolia %}
-        <a href="#" class="js-search" data-id="{{ site.algolia_id }}" data-key="{{ site.algolia_key }}">
-          <i class="icon icon-search" aria-label="Search"></i>
-        </a>
-      {% endif %}
+      <a href="#" class="js-search"
+        {% if features.algolia %}data-id="{{ site.algolia_id }}" data-key="{{ site.algolia_key }}"{% endif %}>
+        <i class="icon icon-search" aria-label="Search"></i>
+      </a>
       {% if features.post %}
         <button class="js-subscribe">Subscribe</button>
       {% endif %}

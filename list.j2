@@ -137,13 +137,13 @@
     {{ render_head(site) }}
     <div class="info _{{ page.type }}">
       <div class="inner">
-        {% if page.type == 'episodes' %}
+        {% if page.type == 'audio_list' %}
           {{ render_podcast_info(site) }}
         {% elif page.type == 'tag' %}
           {{ render_tag_info(page.topic) }}
         {% elif page.type == 'author' %}
           {{ render_author_info(page.topic) }}
-        {% elif page.type == 'language' %}
+        {% elif page.type == 'lang' %}
           {% set info = page.topic %}
           <div class="info_main">
             <h1 class="info_title">{{ info.name }}</h1>

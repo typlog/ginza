@@ -99,8 +99,10 @@
       <div class="inner">
         {% if features.post %}
           {{ render_site_info(site) }}
-        {% else %}
+        {% elif site.podcast %}
           {{ render_podcast_info(site) }}
+        {% else %}
+          {{ render_site_info(site) }}
         {% endif %}
       </div>
     </div>

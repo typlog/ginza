@@ -137,7 +137,7 @@
     {{ render_head(site) }}
     <div class="info _{{ page.type }}">
       <div class="inner">
-        {% if page.type == 'audio_list' %}
+        {% if page.type == 'audio_list' and site.podcast %}
           {{ render_podcast_info(site) }}
         {% elif page.type == 'tag' %}
           {{ render_tag_info(page.topic) }}

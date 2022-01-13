@@ -37,7 +37,7 @@
       <h2 class="info_subtitle">{{ site.summary }}</h2>
     {% endif %}
     <nav class="info_nav">
-      {% for nav in site.nav_links -%}
+      {% for nav in site.primary_links -%}
         <a href="{{ nav.url }}"{% if nav.blank %} target="_blank"{% endif %}>{{ nav.title }}</a>
       {% endfor %}
     </nav>

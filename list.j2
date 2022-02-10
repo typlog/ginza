@@ -81,7 +81,7 @@
       <h2 class="info_subtitle">{{ podcast.subtitle }}</h2>
     {% endif %}
     <nav class="info_nav">
-      <a href="/episodes/feed.xml">RSS</a>
+      <a href="/feed/audio.xml">RSS</a>
       {% for nav in podcast.links %}
         <a href="{{ nav.url }}"{% if nav.blank %} target="_blank"{% endif %}>{{ nav.title }}</a>
       {% endfor %}

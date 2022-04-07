@@ -44,8 +44,7 @@
   </div>
 {% endmacro %}
 
-{% macro render_podcast_info(site) %}
-  {% set podcast = site.podcast %}
+{% macro render_podcast_info(podcast) %}
   {% if podcast.image %}
     <a class="info_logo" href="{{ linkify('/') }}">
       <img src="{{ podcast.image|thumbnail('ss') }}" alt="{{ podcast.title }}">
@@ -79,8 +78,8 @@
     {{ render_head(site) }}
     <div class="info">
       <div class="inner">
-        {% if page.type == 'audio' %}
-          {{ render_podcast_info(site) }}
+        {% if page.type == 'audio' and site.podcast %}
+          {{ render_podcast_info(site.podcast) }}
         {% else %}
           {{ render_site_info(site) }}
         {% endif %}
